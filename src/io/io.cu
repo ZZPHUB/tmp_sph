@@ -1,5 +1,7 @@
 #include "sph.cuh"
 
+using namespace std;
+
 void ini_fluid(float* h_pos, float* h_vel, float* h_ac, float* rhop, float* p, int* particle_type, int* particle_zone, int np)
 {
     ifstream infile;

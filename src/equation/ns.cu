@@ -1,5 +1,7 @@
 #include "sph.cuh"
 
+using namespace std;
+
 void SPH_NS_simpleversion(float* sortedPos, float* sortedVel, float* sorteddensity, float* sortedpressure, int* sorted_particle_type, float* densitydt, float* Veldt, int* cellStart, int* cellEnd, int numParticles, int* particleHash, int timestep, float* dofv, float* rhop_sum, float* w_sum)
 {
     int numThreads, numBlocks;

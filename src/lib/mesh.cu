@@ -1,5 +1,7 @@
 #include "sph.cuh"
 
+using namespace std;
+
 ///根据位置计算粒子网格坐标
 __device__ int3 calcGridPos(float3 p)
 {

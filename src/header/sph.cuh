@@ -14,6 +14,8 @@
 #include "ns.cuh"
 #include "io.cuh"
 
+extern __constant__ SimParams par;
+
 extern __global__ void PC_predictionD(float* sortedPos, float* sortedVel, float* sorteddensity, float* sortedpressure, int numParticles, float* densitydt, float* Veldt, float* Pos_tmp, float* Vel_tmp, float* density_tmp, int* particleIndex, int* sorted_particle_type);
 
 extern __global__ void PC_correctionD(float* sortedPos, float* sortedVel, float* sorteddensity, float* sortedpressure, float* densitydt, float* Veldt, float* Pos_tmp, float* Vel_tmp, float* density_tmp, int* particleIndex, int numParticles, int* sorted_particle_type);
