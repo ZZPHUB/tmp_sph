@@ -8,6 +8,7 @@
 #include <fstream>
 #include <ctime>
 #include <chrono>
+#include <thread>
 
 #include "mesh.cuh"
 #include "ns.cuh"

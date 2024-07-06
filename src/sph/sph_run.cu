@@ -329,7 +329,7 @@ int main(void)
 
             //particle_shifting(d_sortedpos, d_sorteddensity, d_sorted_particle_type, d_sorted_particle_zone, d_cellstart, d_cellend, d_np, d_particlehash, d_fai, d_sigma, d_normal_x, d_normal_z, d_shifting_F_x, d_shifting_F_z, d_shifting_Gama_x, d_shifting_Gama_z, d_shifting_C_x, d_shifting_C_z);
 
-            density_filter(d_sortedpos, d_sorteddensity, d_cellstart, d_cellend, d_np, d_rhop_sum, d_w_sum, d_particlehash);
+            //density_filter(d_sortedpos, d_sorteddensity, d_cellstart, d_cellend, d_np, d_rhop_sum, d_w_sum, d_particlehash);
         }
 
         recover(d_pos, d_vel, d_density, d_pressure, d_np, d_particleIndex, d_particle_type, d_particle_zone, d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_sorted_particle_type, d_sorted_particle_zone);
