@@ -1,5 +1,8 @@
 #include "sph.cuh"
 
+using namespace std;
+using namespace chrono;
+
 __constant__ SimParams par;
 
 int main(void)

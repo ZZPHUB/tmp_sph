@@ -6,6 +6,8 @@
 #include "data_struct.cuh"
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <chrono>
 
 #include "mesh.cuh"
 #include "ns.cuh"
