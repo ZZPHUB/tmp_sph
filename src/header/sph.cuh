@@ -9,6 +9,9 @@
 #include <ctime>
 #include <chrono>
 #include <thread>
+#include <thrust/sort.h>
+#include <thrust/device_ptr.h>
+#include <thrust/extrema.h>
 
 #include "mesh.cuh"
 #include "ns.cuh"
