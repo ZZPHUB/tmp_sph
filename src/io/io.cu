@@ -1,4 +1,5 @@
 #include "sph.cuh"
+#include "/home/zzp/workspace/temp/sphio/src/spio.hpp"
 
 using namespace std;
 
@@ -108,6 +109,31 @@ void ini_fluid(float* h_pos, float* h_vel, float* h_ac, float* rhop, float* p, i
         infile >> particle_zone[i];
     }
     infile.close();
+
+    double *x = new double[np];
+    double *y = new double[np];
+    double *z = new double[np];
+    double *vx = new double[np];
+    double *vy = new double[np];
+    double *vz = new double[np];
+    //double *p = new double[np];
+    //double *rho = new double[np];
+
+    for(int i=0;i<np;i++)
+    {
+        x[i] = h_pos[i*3];
+        y[i] = h_pos[i*3+1];
+        z[i] = h_pos[i*3+2];
+        vx[i] = h_vel[i*3];
+        vy[i] = h_vel[i*3+1];
+        vz[i] = h_vel[i*3+2];
+        //p = 
+    }
+    sphvtk ok(x,y,z,vx,vy,vz,p,rhop);
+    ok.set_num(np);
+    ok.set_path("./");
+    ok.writevtk("ok.vtk");
+
 
 
     //infile.open("h_vp_index.dat", ios::in);
