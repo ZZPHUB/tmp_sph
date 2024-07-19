@@ -1,5 +1,5 @@
 #include "sph.cuh"
-#include "/home/zzp/workspace/temp/sphio/src/spio.hpp"
+//#include "/home/zzp/workspace/temp/sphio/src/spio.hpp"
 
 using namespace std;
 
