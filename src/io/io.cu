@@ -110,6 +110,7 @@ void ini_fluid(float* h_pos, float* h_vel, float* h_ac, float* rhop, float* p, i
     }
     infile.close();
 
+    /*
     double *x = new double[np];
     double *y = new double[np];
     double *z = new double[np];
@@ -133,7 +134,7 @@ void ini_fluid(float* h_pos, float* h_vel, float* h_ac, float* rhop, float* p, i
     ok.set_num(np);
     ok.set_path("./");
     ok.writevtk("ok.vtk");
-
+    */
 
 
     //infile.open("h_vp_index.dat", ios::in);

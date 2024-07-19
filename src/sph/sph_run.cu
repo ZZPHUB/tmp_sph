@@ -46,7 +46,7 @@ int main(void)
     //导入流体数据===(流体按照3*k、3*k+1、3*k+2以行优先格式存储) 
     ini_fluid(h_pos, h_vel, h_ac, rhop, p, particle_type, particle_zone, np);
 
-    /*
+    
     //output to screen
     cout << "初始化完成，载入固体流体数据！" << endl;
     cout << "========================================" << endl;
@@ -415,7 +415,7 @@ int main(void)
     cudaFree(d_shifting_Gama_x);
     cudaFree(d_shifting_Gama_z);
     ///free gpu memory
-    */
+    
     return 0;
 }
 
