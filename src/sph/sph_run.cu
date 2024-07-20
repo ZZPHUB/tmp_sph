@@ -416,6 +416,7 @@ int main(void)
     cudaFree(d_shifting_Gama_z);
     ///free gpu memory
     
+    
     return 0;
 }
 

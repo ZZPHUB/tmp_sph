@@ -168,6 +168,32 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
         cerr << "open file fail in the main program!" << endl;
         exit(1);
     }
+    ofile << "# vtk DataFile Version 3.0" << std::endl;
+    ofile << "sph data" << std::endl;
+    ofile << "ASCII" << std::endl;
+    ofile << "DATASET UNSTRUCTURED_GRID" << std::endl;
+    ofile << "POINTS " << np << " " << "double" << std::endl;
+    for(int i=0;i<np;i++)
+    {
+        ofile << h_pos[i*3] << " " << h_pos[i*3+1] << " " << h_pos[i*3+2] <<endl;
+    }
+
+    ofile << "POINT_DATA" << " " << np << std::endl;
+
+    ofile << "SCALARS "<< "p double 1" << std::endl;
+    ofile << "LOOKUP_TABLE DEFAULT" << std::endl;
+    for(int i=0;i<np;i++)
+    {
+        ofile << p[i] << endl;
+    }
+
+    ofile << "VECTORS "<< "velocity double" << std::endl;
+    for(int i=0;i<np;i++)
+    {
+        ofile << h_vel[i*3] << " " << h_vel[i*3+1] << " " << h_vel[i*3+2] << endl;
+    }
+
+    /*
     ofile << "TITLE = FE Data" << endl;
     ofile << "VARIABLES = \"x\", \"y\", \"z\", \"vx\", \"vy\", \"vz\", \"p\"" << endl;
 
@@ -203,7 +229,7 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
     }
 
     ofile.close();
-
+    */
 
     float h2 = 2.228, h4 = 0.582;
     float maxh_h2 = 0, maxh_h4 = 0;
@@ -249,6 +275,7 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
         ofile << i * dt << "\t" << p[measuring_node[0]] << "\t" << p[measuring_node[1]] << "\t" << p[measuring_node[2]] << "\t" << p[measuring_node[3]] << "\t" << maxh_h2 << "\t" << maxh_h4 << endl;
         ofile.close();
     }
+    
 
     *file_write_control_1 = false;
 }
