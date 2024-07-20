@@ -161,7 +161,7 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
     ofile.setf(ios::scientific, ios::floatfield);
     ofile.setf(ios::left, ios::adjustfield);
 
-    string file_name = "./result/fluid_t=" + to_string(i * dt) + "s.dat";
+    string file_name = "./result/fluid_t=" + to_string(i * dt) + "s.vtk";
     ofile.open(file_name, ios::out);
     if (!ofile)
     {
@@ -192,6 +192,8 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
     {
         ofile << h_vel[i*3] << " " << h_vel[i*3+1] << " " << h_vel[i*3+2] << endl;
     }
+
+    ofile.close();
 
     /*
     ofile << "TITLE = FE Data" << endl;
