@@ -113,7 +113,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                 }
             }
         }
-        printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
+        if(par_count > 128) printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
         if (sorted_particle_type[index] != 1)
         {
             if (fabs(w_sum[index]) > 1.0E-8)
