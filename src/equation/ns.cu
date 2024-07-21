@@ -40,6 +40,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
         pos.z = sortedPos[3 * index + 2];
         int3 gridPos = calcGridPos(pos);
         int3 newgridPos;
+        int grid_count = 0;
+        int par_count = 0;
 
         for (int z = -1; z <= 1; z++)
         {
@@ -71,6 +73,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 float w, frx, fry, frz, factor1, factor2, factor3, factor4;
                                 float q = rr / par.h;
+                                grid_count++;
 
                                 if (rr < par.kh)
                                 {
@@ -84,6 +87,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                         frx = par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4);
                                         fry = par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4);
                                         frz = par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4);
+                                        par_count++;
                                     }
                                     else
                                     {
@@ -109,6 +113,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                 }
             }
         }
+        printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
         if (sorted_particle_type[index] != 1)
         {
             if (fabs(w_sum[index]) > 1.0E-8)
