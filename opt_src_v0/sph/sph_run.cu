@@ -103,6 +103,12 @@ int main(void)
     //SimParams* par_address = nullptr;
     //cudaGetSymbolAddress((void**)&par_address, &par);
     cudaMemcpyToSymbol(par, temps, sizeof(SimParams));//这个cudamemcpytosymbol报错但是编译可以过
+    cudaError_t cudaStatus = cudaGetLastError();
+    if (cudaStatus != cudaSuccess)
+    {
+        cout << "SPH_NS launch failed: " << cudaGetErrorString(cudaStatus) << endl;
+        system("pause");
+    }
     ///constant variables set--------------------------------------------------------------
 
     ///gpu solver--------------------------------------------------------------------------
