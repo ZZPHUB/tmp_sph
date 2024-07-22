@@ -294,8 +294,8 @@ int main(void)
         //end timing!!!
         cudaDeviceSynchronize();
         auto zzp_end = high_resolution_clock::now();
-        duration<double> elapsed = end - start;
-        cout << messages << "loop i use : " <<elapsed.count() << " seconds " << endl;
+        duration<double> elapsed = zzp_end - zzp_start;
+        cout << "loop i use : " <<elapsed.count() << " seconds " << endl;
 
         //density_filter
         if ((i % 20) == 0)

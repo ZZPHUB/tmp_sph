@@ -5,8 +5,8 @@ using namespace std;
 void SPH_NS_simpleversion(float* sortedPos, float* sortedVel, float* sorteddensity, float* sortedpressure, int* sorted_particle_type, float* densitydt, float* Veldt, int* cellStart, int* cellEnd, int numParticles, int* particleHash, int timestep, float* dofv, float* rhop_sum, float* w_sum)
 {
     int numThreads, numBlocks;
-    computeGridSize(numParticles, 128, numBlocks, numThreads); 
-    //computeGridSize(numParticles, 256, numBlocks, numThreads); 
+    //computeGridSize(numParticles, 128, numBlocks, numThreads); 
+    computeGridSize(numParticles, 256, numBlocks, numThreads); 
 
     computeBoundary_Delta_acoustic_D<<<numBlocks,numThreads>>>(sortedPos, sortedVel, sorteddensity, sortedpressure, sorted_particle_type, cellStart, cellEnd, rhop_sum, w_sum, numParticles, particleHash, dofv);
 
@@ -33,8 +33,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
         pos.z = sortedPos[3 * index + 2];
         int3 gridPos = calcGridPos(pos);
         int3 newgridPos;
-        int grid_count = 0;
-        int par_count = 0;
+        //int grid_count = 0;
+        //int par_count = 0;
 
         for (int z = -1; z <= 1; z++)
         {
@@ -64,31 +64,38 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 pos2.z = sortedPos[3 * i + 2];
                                 drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 rr = sqrt(drx * drx + dry * dry + drz * drz);
-                                float w, frx, fry, frz, factor1, factor2, factor3, factor4;
+                                float w, fr;
+                                //float frx, fry, frz, factor1, factor2, factor3, factor4;
                                 float q = rr / par.h;
-                                grid_count++;
+                                //grid_count++;
 
                                 if (rr < par.kh)
                                 {
                                     if (q <= 2)
                                     {
-                                        w = par.adh * pow(1 - q / 2.0, 4) * (2 * q + 1.0);
-                                        factor1 = pow(1 - q / 2.0, 3);
-                                        factor2 = (2 * q + 1.0);
-                                        factor3 = pow(1 - q / 2.0, 4);
-                                        factor4 = par.h * rr;
-                                        frx = par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4);
-                                        fry = par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4);
-                                        frz = par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4);
-                                        par_count++;
+                                        w = (par.adh * pow(1 - q / 2.0, 4) * (2 * q + 1.0));
+                                        #define factor1 (pow(1 - q / 2.0, 3))
+                                        #define factor2 (2 * q + 1.0);
+                                        #define factor3 (pow(1 - q / 2.0, 4))
+                                        #define factor4  (par.h * rr)
+                                        
+                                        fr =  (par.adh * (-2.0 * factor1 * factor2/ factor4 + 2.0 * factor3 / factor4));
+                                        //#define  frx  (par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4));
+                                        //#define  fry  (par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4));
+                                        //#define  frz  (par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4));
+                                        //par_count++;
                                     }
                                     else
                                     {
                                         w = 0.0;
-                                        frx = 0.0;
-                                        fry = 0.0;
-                                        frz = 0.0;
+                                        fr = 0.0;
+                                        //frx = 0.0;
+                                        //fry = 0.0;
+                                        //frz = 0.0;
                                     }
+                                    #define  frx  (fr*drx)
+                                    #define  fry  (fr*dry)
+                                    #define  frz  (fr*drz)
                                     if (sorted_particle_type[index] != 1 && sorted_particle_type[i] == 1)//计算边界所需变量
                                     {
                                         rhop_sum[index] += (sortedpressure[i] - sorteddensity[i] * (0.0 * drx + 0.0 * dry + (0.0 - par.gravity) * drz)) * w;
@@ -106,7 +113,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                 }
             }
         }
-        if(par_count > 128) printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
+        //if(par_count > 128) printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
         if (sorted_particle_type[index] != 1)
         {
             if (fabs(w_sum[index]) > 1.0E-8)
@@ -121,6 +128,13 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
             sorteddensity[index] = sortedpressure[index] / par.cs / par.cs + par.restDensity;
         }
     }
+    #undef factor1
+    #undef factor2
+    #undef factor3
+    #undef factor4
+    #undef frx
+    #undef fry
+    #undef frz
 }
 
 
