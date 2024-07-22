@@ -62,8 +62,12 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
-                                rr = sqrt(drx * drx + dry * dry + drz * drz);
+                                #define drx (pos.x - pos2.x)
+                                #define dry (pos.y - pos2.y)
+                                #define drz (pos.z - pos2.z)
+                                #define rr (sqrt(drx*drx + dry*dry + drz*drz))
+                                //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
+                                //rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 float w, fr;
                                 //float frx, fry, frz, factor1, factor2, factor3, factor4;
                                 float q = rr / par.h;
@@ -75,7 +79,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     {
                                         w = (par.adh * pow(1 - q / 2.0, 4) * (2 * q + 1.0));
                                         #define factor1 (pow(1 - q / 2.0, 3))
-                                        #define factor2 (2 * q + 1.0);
+                                        #define factor2 (2 * q + 1.0)
                                         #define factor3 (pow(1 - q / 2.0, 4))
                                         #define factor4  (par.h * rr)
                                         
@@ -128,6 +132,10 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
             sorteddensity[index] = sortedpressure[index] / par.cs / par.cs + par.restDensity;
         }
     }
+    #undef drx
+    #undef dry
+    #undef drz
+    #undef rr
     #undef factor1
     #undef factor2
     #undef factor3
@@ -185,63 +193,87 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                             if (cellData != gridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
-                                float3 pos2; float rr, drx, dry, drz;
+                                float3 pos2; 
+                                //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
-                                rr = sqrt(drx * drx + dry * dry + drz * drz);
+                                #define drx (pos.x - pos2.x)
+                                #define dry (pos.y - pos2.y)
+                                #define drz (pos.z - pos2.z)
+                                #define rr (sqrt(drx * drx + dry * dry + drz * drz))
+                                //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
+                                //rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 if (rr < par.kh)
                                 {
-                                    float frx, fry, frz, factor1, factor2, factor3, factor4;
+                                    //float frx, fry, frz
+                                    float fr;
+                                    //float factor1, factor2, factor3, factor4;
                                     float q = rr / par.h;
                                     if (q <= 2)
                                     {
-                                        factor1 = pow(1 - q / 2.0, 3);
-                                        factor2 = (2 * q + 1.0);
-                                        factor3 = pow(1 - q / 2.0, 4);
-                                        factor4 = par.h * rr;
-                                        frx = par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4);
-                                        fry = par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4);
-                                        frz = par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4);
+                                        #define factor1 (pow(1 - q / 2.0, 3))
+                                        #define factor2 (2 * q + 1.0)
+                                        #define factor3 (pow(1 - q / 2.0, 4))
+                                        #define factor4 (par.h * rr)
+                                        fr = par.adh * (-2.0 * factor1 * factor2/factor4 + 2.0 * factor3/factor4);
+                                        //frx = par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4);
+                                        //fry = par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4);
+                                        //frz = par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4);
                                     }
                                     else
                                     {
-                                        frx = 0.0;
-                                        fry = 0.0;
-                                        frz = 0.0;
+                                        fr = 0.0;
+                                        //frx = 0.0;
+                                        //fry = 0.0;
+                                        //frz = 0.0;
                                     }
+                                    #define frx (fr * drx)
+                                    #define fry (fr * dry)
+                                    #define frz (fr * drz)
                                     //质量方程
-                                    factor1 = (vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz;
-                                    densitydt_temp += dens * factor1 * par.particleMass / sorteddensity[i];
+                                    //factor1 = (vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz;
+                                    #define factor5 = (vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz;
+                                    densitydt_temp += dens * factor5 * par.particleMass / sorteddensity[i];
+                                    
                                     //density diffusion
-                                    factor1 = drx * frx + dry * fry + drz * frz;
-                                    factor2 = rr * rr + par.eta * par.eta;
-                                    factor3 = par.delta * par.h * par.cs * factor1 / factor2;
-                                    densitydt_temp += (dens - sorteddensity[i]) * factor3 * par.particleMass / sorteddensity[i];
+                                    //factor1 = drx * frx + dry * fry + drz * frz;
+                                    //factor2 = rr * rr + par.eta * par.eta;
+                                    //factor3 = par.delta * par.h * par.cs * factor1 / factor2;
+                                    #define factor4 (drx * frx + dry * fry + drz * frz)
+                                    #define factor5 (rr * rr + par.eta * par.eta)
+                                    #define factor6 (par.delta * par.h * par.cs * factor4 / factor5)
+                                    densitydt_temp += (dens - sorteddensity[i]) * factor6 * par.particleMass / sorteddensity[i];
                                     //动量方程
-                                    factor1 = (sortedpressure[i] + pres) / dens / sorteddensity[i];
-                                    veldt_temp.x -= par.particleMass * factor1 * frx;
-                                    veldt_temp.y -= par.particleMass * factor1 * fry;
-                                    veldt_temp.z -= par.particleMass * factor1 * frz;
+                                    //factor1 = (sortedpressure[i] + pres) / dens / sorteddensity[i];
+                                    #define factor7 ((sortedpressure[i] + pres) / dens / sorteddensity[i])
+                                    veldt_temp.x -= par.particleMass * factor7 * frx;
+                                    veldt_temp.y -= par.particleMass * factor7 * fry;
+                                    veldt_temp.z -= par.particleMass * factor7 * frz;
 
                                     if (sorted_particle_type[index] == 1 && sorted_particle_type[i] == 1)
                                     {
                                         //acoustic damper
-                                        factor1 = par.restDensity * par.cs * par.h;
-                                        factor2 = dofv[index] + dofv[i];
-                                        veldt_temp.x += factor1 * factor2 * frx * par.particleMass / sorteddensity[i] / dens;
-                                        veldt_temp.y += factor1 * factor2 * fry * par.particleMass / sorteddensity[i] / dens;
-                                        veldt_temp.z += factor1 * factor2 * frz * par.particleMass / sorteddensity[i] / dens;
+                                        //factor1 = par.restDensity * par.cs * par.h;
+                                        //factor2 = dofv[index] + dofv[i];
+                                        #define factor8 (par.restDensity * par.cs * par.h)
+                                        #define factor9 (dofv[index] + dofv[i])
+                                        veldt_temp.x += factor8 * factor9 * frx * par.particleMass / sorteddensity[i] / dens;
+                                        veldt_temp.y += factor8 * factor9 * fry * par.particleMass / sorteddensity[i] / dens;
+                                        veldt_temp.z += factor8 * factor9 * frz * par.particleMass / sorteddensity[i] / dens;
 
                                         //artificial viscosity
-                                        factor1 = par.afa * par.h * par.cs;
-                                        factor2 = (vel.x - sortedVel[3 * i]) * drx + (vel.y - sortedVel[3 * i + 1]) * dry + (vel.z - sortedVel[3 * i + 2]) * drz;
-                                        factor3 = rr * rr + par.eta * par.eta;
-                                        factor4 = factor1 * factor2 / factor3;
-                                        veldt_temp.x += factor4 * frx * par.restDensity / dens * par.particleMass / sorteddensity[i];
-                                        veldt_temp.y += factor4 * fry * par.restDensity / dens * par.particleMass / sorteddensity[i];
-                                        veldt_temp.z += factor4 * frz * par.restDensity / dens * par.particleMass / sorteddensity[i];
+                                        //factor1 = par.afa * par.h * par.cs;
+                                        //factor2 = (vel.x - sortedVel[3 * i]) * drx + (vel.y - sortedVel[3 * i + 1]) * dry + (vel.z - sortedVel[3 * i + 2]) * drz;
+                                        //factor3 = rr * rr + par.eta * par.eta;
+                                        //factor4 = factor1 * factor2 / factor3;
+                                        #define factor10 (par.afa * par.h * par.cs)
+                                        #define factor11 ((vel.x - sortedVel[3 * i]) * drx + (vel.y - sortedVel[3 * i + 1]) * dry + (vel.z - sortedVel[3 * i + 2]) * drz)
+                                        #define factor12 (rr * rr + par.eta * par.eta)
+                                        #define factor13 (factor10 * factor11 / factor12)
+                                        veldt_temp.x += factor13 * frx * par.restDensity / dens * par.particleMass / sorteddensity[i];
+                                        veldt_temp.y += factor13 * fry * par.restDensity / dens * par.particleMass / sorteddensity[i];
+                                        veldt_temp.z += factor13 * frz * par.restDensity / dens * par.particleMass / sorteddensity[i];
                                     }
                                 }
                             }
@@ -254,5 +286,25 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
         Veldt[3 * index] = veldt_temp.x;
         Veldt[3 * index + 1] = veldt_temp.y;
         Veldt[3 * index + 2] = veldt_temp.z + par.gravity;
+        #undef drx
+        #undef dry
+        #undef drz
+        #undef rr
+        #undef frx
+        #undef fry
+        #undef frz
+        #undef factor1
+        #undef factor2
+        #undef factor3
+        #undef factor4
+        #undef factor5
+        #undef factor6
+        #undef factor7
+        #undef factor8
+        #undef factor9
+        #undef factor10
+        #undef factor11
+        #undef factor12
+        #undef factor13
     }
 }
