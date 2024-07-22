@@ -161,7 +161,7 @@ void output_fluid_file(int cnt_frame, int i, float dt, int np, float* h_pos, flo
     ofile.setf(ios::scientific, ios::floatfield);
     ofile.setf(ios::left, ios::adjustfield);
 
-    string file_name = "./result/fluid_t=" + to_string(i) + "vtk";
+    string file_name = "./result/fluid_t=" + to_string(i) + ".vtk";
     ofile.open(file_name, ios::out);
     if (!ofile)
     {
