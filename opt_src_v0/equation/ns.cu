@@ -234,7 +234,7 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                                     #define frz (fr * drz)
                                     //质量方程
                                     //factor1 = (vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz;
-                                    #define factor5 = (vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz;
+                                    #define factor5  ((vel.x - sortedVel[3 * i]) * frx + (vel.y - sortedVel[3 * i + 1]) * fry + (vel.z - sortedVel[3 * i + 2]) * frz)
                                     densitydt_temp += dens * factor5 * par.particleMass / sorteddensity[i];
                                     
                                     //density diffusion
