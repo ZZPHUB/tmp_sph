@@ -5,7 +5,8 @@ using namespace std;
 void SPH_NS_simpleversion(float* sortedPos, float* sortedVel, float* sorteddensity, float* sortedpressure, int* sorted_particle_type, float* densitydt, float* Veldt, int* cellStart, int* cellEnd, int numParticles, int* particleHash, int timestep, float* dofv, float* rhop_sum, float* w_sum)
 {
     int numThreads, numBlocks;
-    computeGridSize(numParticles, 256, numBlocks, numThreads); 
+    computeGridSize(numParticles, 128, numBlocks, numThreads); 
+    //computeGridSize(numParticles, 256, numBlocks, numThreads); 
 
     computeBoundary_Delta_acoustic_D<<<numBlocks,numThreads>>>(sortedPos, sortedVel, sorteddensity, sortedpressure, sorted_particle_type, cellStart, cellEnd, rhop_sum, w_sum, numParticles, particleHash, dofv);
 

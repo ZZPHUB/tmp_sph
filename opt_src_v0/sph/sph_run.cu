@@ -245,7 +245,7 @@ int main(void)
             //cudaMemcpy(rhop, d_density, sizebyte_f1, cudaMemcpyDeviceToHost);
             cudaMemcpy(p, d_pressure, sizebyte_f1, cudaMemcpyDeviceToHost);
             cudaMemcpy(h_particle_type, d_particle_type, sizebyte_ui, cudaMemcpyDeviceToHost);
-            cudaMemcpy()
+            //cudaMemcpy();
             now = time(0);
             date_now = ctime(&now);
             cout << "Time step " << i << ",    Simulation time " << i * dt << "s,   Real time: " << date_now << endl;
@@ -261,7 +261,10 @@ int main(void)
             thread output_t1(output_fluid_file, cnt_frame, (i), dt, np, h_pos, h_vel, rhop, p, h_particle_type, h_particle_zone, h_vp_index, measuring_particle, dx, &file_write_control_1,h_table);
             output_t1.detach();
         }
-
+        //timing!!!!
+        cudaDeviceSynchronize();
+        auto zzp_start = high_resolution_clock::now();
+        /*This turn d_* is the original information*/
         //prediction
         calcHash(d_pos, d_particlehash, d_particleIndex, d_np);
 
@@ -287,6 +290,12 @@ int main(void)
         SPH_NS_simpleversion(d_pos, d_vel, d_density, d_pressure, d_particle_type, d_densitydt, d_Veldt, d_cellstart, d_cellend, d_np, d_particlehash, i, d_dofv, d_rhop_sum, d_w_sum);
 
         PC_correction(d_pos, d_vel, d_density, d_pressure, d_densitydt, d_Veldt, d_particlehash, d_particleIndex, d_pos_tmp, d_vel_tmp, d_density_tmp, d_np, d_particle_type);
+
+        //end timing!!!
+        cudaDeviceSynchronize();
+        auto zzp_end = high_resolution_clock::now();
+        duration<double> elapsed = end - start;
+        cout << messages << "loop i use : " <<elapsed.count() << " seconds " << endl;
 
         //density_filter
         if ((i % 20) == 0)
