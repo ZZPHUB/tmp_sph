@@ -103,8 +103,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     }
                                     else if (sorted_particle_type[index] == 1 && sorted_particle_type[i] == 1)
                                     {
-                                        factor1 = (sortedVel[3 * index] - sortedVel[3 * i]) * frx + (sortedVel[3 * index + 1] - sortedVel[3 * i + 1]) * fry + (sortedVel[3 * index + 2] - sortedVel[3 * i + 2]) * frz;
-                                        dofv[index] -= factor1 * par.particleMass / sorteddensity[i];
+                                        #define factor5  ((sortedVel[3 * index] - sortedVel[3 * i]) * frx + (sortedVel[3 * index + 1] - sortedVel[3 * i + 1]) * fry + (sortedVel[3 * index + 2] - sortedVel[3 * i + 2]) * frz)
+                                        dofv[index] -= factor5 * par.particleMass / sorteddensity[i];
                                     }
                                 }
                             }
@@ -132,6 +132,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
     #undef factor2
     #undef factor3
     #undef factor4
+    #undef factor5
     #undef frx
     #undef fry
     #undef frz
