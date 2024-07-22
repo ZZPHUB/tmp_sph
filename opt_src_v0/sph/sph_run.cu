@@ -278,14 +278,17 @@ int main(void)
         auto zzp_1 = high_resolution_clock::now();
         
         SPH_NS_simpleversion(d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_sorted_particle_type, d_densitydt, d_Veldt, d_cellstart, d_cellend, d_np, d_particlehash, i, d_dofv, d_rhop_sum, d_w_sum);
-        PC_prediction(d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_densitydt, d_Veldt, d_particlehash, d_particleIndex, d_pos_tmp, d_vel_tmp, d_density_tmp, d_np, d_sorted_particle_type);
         
         //timing
         cudaDeviceSynchronize();
         auto zzp_2 = high_resolution_clock::now();
 
-        //recover(d_pos, d_vel, d_density, d_pressure, d_np, d_particleIndex, d_particle_type, d_particle_zone, d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_sorted_particle_type, d_sorted_particle_zone);
+        PC_prediction(d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_densitydt, d_Veldt, d_particlehash, d_particleIndex, d_pos_tmp, d_vel_tmp, d_density_tmp, d_np, d_sorted_particle_type);
         
+        //timing
+        cudaDeviceSynchronize();
+        auto zzp_3 = high_resolution_clock::now();
+
         /*This turn is d_sorted* is the original information!!!!!*/
         //Correction
         calcHash(d_sortedpos, d_particlehash, d_particleIndex, d_np);
@@ -295,28 +298,33 @@ int main(void)
         reorder(d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_sorted_particle_type, d_sorted_particle_zone, d_pos, d_vel, d_density, d_pressure, d_particle_type, d_particle_zone, d_particlehash, d_particleIndex, d_cellstart, d_cellend, d_np, temps,d_table_r,d_table_l);
         //timing
         cudaDeviceSynchronize();
-        auto zzp_3 = high_resolution_clock::now();
+        auto zzp_4 = high_resolution_clock::now();
 
         SPH_NS_simpleversion(d_pos, d_vel, d_density, d_pressure, d_particle_type, d_densitydt, d_Veldt, d_cellstart, d_cellend, d_np, d_particlehash, i, d_dofv, d_rhop_sum, d_w_sum);
+
+        //timing
+        cudaDeviceSynchronize();
+        auto zzp_5 = high_resolution_clock::now();
 
         PC_correction(d_pos, d_vel, d_density, d_pressure, d_densitydt, d_Veldt, d_particlehash, d_particleIndex, d_pos_tmp, d_vel_tmp, d_density_tmp, d_np, d_particle_type);
 
         //end timing!!!
         cudaDeviceSynchronize();
-        auto zzp_4 = high_resolution_clock::now();
+        auto zzp_6 = high_resolution_clock::now();
         duration<double> elapsed0 = zzp_1 - zzp_0;
         duration<double> elapsed1 = zzp_2 - zzp_1;
         duration<double> elapsed2 = zzp_3 - zzp_2;
         duration<double> elapsed3 = zzp_4 - zzp_3;
-        cout << "loop " << i << " used : " << elapsed0.count() << " " << elapsed1.count() << " " <<  elapsed2.count() << " " << elapsed3.count() << endl;
+        duration<double> elapsed4 = zzp_5 - zzp_4;
+        duration<double> elapsed5 = zzp_6 - zzp_5;
+
+        cout << "loop " << i << " used : " << elapsed0.count() << " " << elapsed1.count() << " " <<  elapsed2.count() << " " << elapsed3.count() << " " << elapsed4.count() << " " << elapsed5.count() << endl;
 
         //density_filter
         if ((i % 20) == 0)
         {
             //density_filter(d_sortedpos, d_sorteddensity, d_cellstart, d_cellend, d_np, d_rhop_sum, d_w_sum, d_particlehash);
         }
-
-        //recover(d_pos, d_vel, d_density, d_pressure, d_np, d_particleIndex, d_particle_type, d_particle_zone, d_sortedpos, d_sortedvel, d_sorteddensity, d_sortedpressure, d_sorted_particle_type, d_sorted_particle_zone);
 
         if (i == (branch_i + out_putstep - 1))
         {
