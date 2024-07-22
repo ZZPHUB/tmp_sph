@@ -301,14 +301,14 @@ int main(void)
 
         PC_correction(d_pos, d_vel, d_density, d_pressure, d_densitydt, d_Veldt, d_particlehash, d_particleIndex, d_pos_tmp, d_vel_tmp, d_density_tmp, d_np, d_particle_type);
 
-        end timing!!!
+        //end timing!!!
         cudaDeviceSynchronize();
         auto zzp_4 = high_resolution_clock::now();
         duration<double> elapsed0 = zzp_1 - zzp_0;
         duration<double> elapsed1 = zzp_2 - zzp_1;
         duration<double> elapsed2 = zzp_3 - zzp_2;
         duration<double> elapsed3 = zzp_4 - zzp_3;
-        cout << "loop " << i << " used : " << elapsed0.count << " " << elapsed1.count << " " <<  elapsed2.count << " " << elapsed3.count << endl;
+        cout << "loop " << i << " used : " << elapsed0.count() << " " << elapsed1.count() << " " <<  elapsed2.count() << " " << elapsed3.count() << endl;
 
         //density_filter
         if ((i % 20) == 0)
