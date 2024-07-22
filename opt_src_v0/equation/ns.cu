@@ -58,7 +58,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                             if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
-                                float3 pos2; float rr, drx, dry, drz;
+                                float3 pos2; 
+                                //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
@@ -240,7 +241,9 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                                     //factor1 = drx * frx + dry * fry + drz * frz;
                                     //factor2 = rr * rr + par.eta * par.eta;
                                     //factor3 = par.delta * par.h * par.cs * factor1 / factor2;
+                                    #undef factor4
                                     #define factor4 (drx * frx + dry * fry + drz * frz)
+                                    #undef factor5
                                     #define factor5 (rr * rr + par.eta * par.eta)
                                     #define factor6 (par.delta * par.h * par.cs * factor4 / factor5)
                                     densitydt_temp += (dens - sorteddensity[i]) * factor6 * par.particleMass / sorteddensity[i];
