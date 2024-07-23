@@ -18,15 +18,15 @@ __device__ int3 calcGridPos(float3 p)
 
 __device__ int calcGridPos_x(float x)
 {
-    return (x - par.gridxmin) /par.gridSize;
+    return (int)floor((x - par.gridxmin) /par.gridSize);
 }
 __device__ int calcGridPos_y(float y)
 {
-    return (y - par.gridymin) /par.gridSize;
+    return (int)floor((y - par.gridymin) /par.gridSize);
 }
 __device__ int calcGridPos_z(float z)
 {
-    return (z - par.gridzmin) /par.gridSize;
+    return (int)floor((z - par.gridzmin) /par.gridSize);
 }
 __device__ int calcGridHash(int x,int y,int z)
 {
