@@ -26,7 +26,10 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
 
     if (index < numParticles)
     {
-        dofv[index] = 0.0; rhop_sum[index] = 0.0; w_sum[index] = 0.0;//dofv-acoustic damper
+        //dofv[index] = 0.0; rhop_sum[index] = 0.0; w_sum[index] = 0.0;//dofv-acoustic damper
+        float rhop_sum_tmp = 0.0;
+        float w_sum_tmp = 0.0;
+        float dofv_tmp = 0.0;
         float3 pos;
         pos.x = sortedPos[3 * index];
         pos.y = sortedPos[3 * index + 1];
@@ -49,7 +52,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                     //newgridPos.y = gridPos.y + y;
                     //newgridPos.z = gridPos.z + z;
                     //int newgridHash = calcGridHash(newgridPos);
-                    int newgridHash = calcGridHash(gridPos.x+x,gridPos.y+y,gridPos.z+z);
+                    int newgridHash = calcGridHash_new(gridPos.x + x,gridPos.y + y,gridPos.z + z);
                     if (newgridHash <= par.hash_max && newgridHash >= 0)
                     {
                         int startIndex = cellStart[newgridHash];
@@ -62,13 +65,14 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                             if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
-                                /*
+                                
                                 float3 pos2; 
                                 //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                */
+                                
+                               /*
                                 __shared__ float pos2[256*3];
                                 pos2[threadIdx.x] = sortedPos[3*i];
                                 pos2[threadIdx.x+256] = sortedPos[3*i+1];
@@ -76,9 +80,10 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 #define drx (pos.x - pos2[threadIdx.x])
                                 #define dry (pos.y - pos2[threadIdx.x+256])
                                 #define drz (pos.z - pos2[threadIdx.x+512])
-                                //#define drx (pos.x - pos2.x)
-                                //#define dry (pos.y - pos2.y)
-                                //#define drz (pos.z - pos2.z)
+                                */
+                                #define drx (pos.x - pos2.x)
+                                #define dry (pos.y - pos2.y)
+                                #define drz (pos.z - pos2.z)
                                 #define rr (sqrt(drx*drx + dry*dry + drz*drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
@@ -116,13 +121,13 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     #define  frz  (fr*drz)
                                     if (sorted_particle_type[index] != 1 && sorted_particle_type[i] == 1)//计算边界所需变量
                                     {
-                                        rhop_sum[index] += (sortedpressure[i] - sorteddensity[i] * (0.0 * drx + 0.0 * dry + (0.0 - par.gravity) * drz)) * w;
-                                        w_sum[index] += w;
+                                        rhop_sum_tmp += (sortedpressure[i] - sorteddensity[i] * (0.0 * drx + 0.0 * dry + (0.0 - par.gravity) * drz)) * w;
+                                        w_sum_tmp += w;
                                     }
                                     else if (sorted_particle_type[index] == 1 && sorted_particle_type[i] == 1)
                                     {
                                         #define factor5  ((sortedVel[3 * index] - sortedVel[3 * i]) * frx + (sortedVel[3 * index + 1] - sortedVel[3 * i + 1]) * fry + (sortedVel[3 * index + 2] - sortedVel[3 * i + 2]) * frz)
-                                        dofv[index] -= factor5 * par.particleMass / sorteddensity[i];
+                                        dofv_tmp -= factor5 * par.particleMass / sorteddensity[i];
                                     }
                                 }
                             }
@@ -131,19 +136,25 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                 }
             }
         }
+        dofv[index] = dofv_tmp;
         //if(par_count > 128) printf("the ptc :%d has %d pars and it's grid has %d ptcs!\n",index,par_count,grid_count);
         if (sorted_particle_type[index] != 1)
         {
-            if (fabs(w_sum[index]) > 1.0E-8)
+            //if (fabs(w_sum[index]) > 1.0E-8)
+            if (fabs(w_sum_tmp) > 1.0E-8)
             {
-                sortedpressure[index] = rhop_sum[index] / w_sum[index];
+                //sortedpressure[index] = rhop_sum[index] / w_sum[index];
+                rhop_sum_tmp = rhop_sum_tmp / w_sum_tmp;
             }
             else
             {
-                sortedpressure[index] = 0;
+                //sortedpressure[index] = 0;
+                rhop_sum_tmp = 0.0;
             }
-            if (sortedpressure[index] < 0)  sortedpressure[index] = 0;
-            sorteddensity[index] = sortedpressure[index] / par.cs / par.cs + par.restDensity;
+            //if (sortedpressure[index] < 0)  sortedpressure[index] = 0;
+            if(rhop_sum_tmp < 0.0) rhop_sum_tmp = 0.0;
+            sortedpressure[index] = rhop_sum_tmp;
+            sorteddensity[index] = rhop_sum_tmp / par.cs / par.cs + par.restDensity;
         }
     }
     #undef drx
@@ -198,10 +209,10 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                     //newgridPos.y = gridPos.y + y;
                     //newgridPos.z = gridPos.z + z;
                     //int gridHash = calcGridHash(newgridPos);
-                    gridPos.x += x;
-                    gridPos.y += y;
-                    gridPos.z += z;
-                    int gridHash = calcGridHash(gridPos.x,gridPos.y,gridPos.z);
+                    //gridPos.x += x;
+                    //gridPos.y += y;
+                    //gridPos.z += z;
+                    int gridHash = calcGridHash_new(gridPos.x+x,gridPos.y+y,gridPos.z+z);
 
                     if (gridHash <= par.hash_max && gridHash >= 0)
                     {
@@ -215,13 +226,16 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                             if (cellData != gridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
-                                /*
                                 float3 pos2; 
                                 //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                */
+                                #define drx (pos.x - pos2.x)
+                                #define dry (pos.y - pos2.y)
+                                #define drz (pos.z - pos2.z)
+                                
+                               /*
                                __shared__ float pos2[256*3];
                                pos2[threadIdx.x] = sortedPos[3*i];
                                pos2[threadIdx.x+256] = sortedPos[3*i+1];
@@ -229,6 +243,7 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                                 #define drx (pos.x - pos2[threadIdx.x])
                                 #define dry (pos.y - pos2[threadIdx.x+256])
                                 #define drz (pos.z - pos2[threadIdx.x+512])
+                                */
                                 #define rr (sqrt(drx * drx + dry * dry + drz * drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
@@ -309,9 +324,9 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                             }
                         }
                     }
-                    gridPos.x -= x;
-                    gridPos.y -= y;
-                    gridPos.z -= z;
+                   //gridPos.x -= x;
+                   // gridPos.y -= y;
+                   // gridPos.z -= z;
                 }
             }
         }

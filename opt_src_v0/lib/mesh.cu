@@ -28,7 +28,7 @@ __device__ int calcGridPos_z(float z)
 {
     return (int)floor((z - par.gridzmin) /par.gridSize);
 }
-__device__ int calcGridHash(int x,int y,int z)
+__device__ int calcGridHash_new(int x,int y,int z)
 {
     return (z* par.gridxdim * par.gridydim ) + (y * par.gridxdim) + x;
 }
