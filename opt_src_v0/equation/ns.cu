@@ -58,15 +58,24 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                             if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
+                                /*
                                 float3 pos2; 
                                 //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                #define drx (pos.x - pos2.x)
-                                #define dry (pos.y - pos2.y)
-                                #define drz (pos.z - pos2.z)
-                                #define rr (sqrt(drx*drx + dry*dry + drz*drz))
+                                */
+                                __shared__ float pos2[256*3];
+                                pos2[threadIdx.x] = sortedPos[3*i];
+                                pos2[threadIdx.x+256] = sortedPos[3*i];
+                                pos2[threadIdx.x+512] = sortedPos[3*i];
+                                #define drx (pos.x - pos2[threadIdx.x])
+                                #define dry (pos.y - pos2[threadIdx.x+256])
+                                #define drz (pos.z - pos2[threadIdx.x+512])
+                                //#define drx (pos.x - pos2.x)
+                                //#define dry (pos.y - pos2.y)
+                                //#define drz (pos.z - pos2.z)
+                                //#define rr (sqrt(drx*drx + dry*dry + drz*drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 float w, fr;
