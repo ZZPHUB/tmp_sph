@@ -16,6 +16,23 @@ __device__ int3 calcGridPos(float3 p)
     return gridPos;
 }
 
+__device__ int calcGridPos_x(float x)
+{
+    return (x - par.gridxmin) /par.gridSize;
+}
+__device__ int calcGridPos_y(float y)
+{
+    return (y - par.gridymin) /par.gridSize;
+}
+__device__ int calcGridPos_z(float z)
+{
+    return (z - par.gridzmin) /par.gridSize;
+}
+__device__ int calcGridHash(int x,int y,int z)
+{
+    return (z* par.gridxdim * par.gridydim ) + (y * par.gridxdim) + x;
+}
+
 ///根据网格坐标计算hash值
 __device__ int calcGridHash(int3 gridPos)
 {
