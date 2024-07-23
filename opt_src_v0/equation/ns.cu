@@ -167,10 +167,10 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
 
     if (index < numParticles)
     {
-        densitydt[index] = 0.0;
-        Veldt[3 * index] = 0.0;
-        Veldt[3 * index + 1] = 0.0;
-        Veldt[3 * index + 2] = 0.0;
+        //densitydt[index] = 0.0;
+        //Veldt[3 * index] = 0.0;
+        //Veldt[3 * index + 1] = 0.0;
+        //Veldt[3 * index + 2] = 0.0;
         float3 pos, vel;
         pos.x = sortedPos[3 * index];
         pos.y = sortedPos[3 * index + 1];
@@ -198,7 +198,10 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                     //newgridPos.y = gridPos.y + y;
                     //newgridPos.z = gridPos.z + z;
                     //int gridHash = calcGridHash(newgridPos);
-                    int gridHash = calcGridHash(gridPos.x + x,gridPos.y + y,gridPos.z + z);
+                    gridPos.x += x;
+                    gridPos.y += y;
+                    gridPos.z += z;
+                    int gridHash = calcGridHash(gridPos.x,gridPos.y,gridPos.z);
 
                     if (gridHash <= par.hash_max && gridHash >= 0)
                     {
@@ -306,6 +309,9 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                             }
                         }
                     }
+                    gridPos.x -= x;
+                    gridPos.y -= y;
+                    gridPos.z -= z;
                 }
             }
         }
