@@ -194,14 +194,20 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                             if (cellData != gridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
+                                /*
                                 float3 pos2; 
                                 //float rr, drx, dry, drz;
                                 pos2.x = sortedPos[3 * i];
                                 pos2.y = sortedPos[3 * i + 1];
                                 pos2.z = sortedPos[3 * i + 2];
-                                #define drx (pos.x - pos2.x)
-                                #define dry (pos.y - pos2.y)
-                                #define drz (pos.z - pos2.z)
+                                */
+                               __shared__ float pos2[256*3];
+                               pos2[threadIdx.x] = sortedPos[3*i];
+                               pos2[threadIdx.x+256] = sortedPos[3*i];
+                               pos2[threadIdx.x+512] = sortedPos[3*i];
+                                #define drx (pos.x - pos2[threadIdx.x])
+                                #define dry (pos.y - pos2[threadIdx.x+256])
+                                #define drz (pos.z - pos2[threadIdx.x+512])
                                 #define rr (sqrt(drx * drx + dry * dry + drz * drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
