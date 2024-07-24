@@ -56,9 +56,11 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                     int newgridHash = particleHash[index] + calcGridHash_new(x,y,z);
                     if (newgridHash <= par.hash_max && newgridHash >= 0)
                     {
-                        int startIndex = cellStart[newgridHash];
+                        //int startIndex = cellStart[newgridHash];
+                        #define startIndex (cellStart[newgridHash])
                         if (startIndex == 0xffffffff)	continue;
-                        int endIndex = cellEnd[newgridHash];
+                        //int endIndex = cellEnd[newgridHash];
+                        #define endIndex (cellEnd[newgridHash])
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
