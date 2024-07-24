@@ -56,26 +56,29 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                     int newgridHash = particleHash[index] + calcGridHash_new(x,y,z);
                     if (newgridHash <= par.hash_max && newgridHash >= 0)
                     {
-                        //int startIndex = cellStart[newgridHash];
-                        #define startIndex (cellStart[newgridHash])
+                        int startIndex = cellStart[newgridHash];
+                        //#define startIndex (cellStart[newgridHash])
                         if (startIndex == 0xffffffff)	continue;
-                        //int endIndex = cellEnd[newgridHash];
-                        #define endIndex (cellEnd[newgridHash])
+                        int endIndex = cellEnd[newgridHash];
+                        //#define endIndex (cellEnd[newgridHash])
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
-                            #undef startIndex
-                            #undef endIndex
+                            //#undef startIndex
+                            //#undef endIndex
                             //int cellData = particleHash[i];
                             //if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
                                 
-                                float3 pos2; 
+                                //float3 pos2; 
                                 //float rr, drx, dry, drz;
-                                pos2.x = sortedPos[3 * i];
-                                pos2.y = sortedPos[3 * i + 1];
-                                pos2.z = sortedPos[3 * i + 2];
+                                //pos2.x = sortedPos[3 * i];
+                                //pos2.y = sortedPos[3 * i + 1];
+                                //pos2.z = sortedPos[3 * i + 2];
+                                #define pos2_x sortedPos[3*i]
+                                #define pos2_y sortedPos[3*i+1]
+                                #define pos2_z sortedPos[3*i+2]
                                 
                                /*
                                 __shared__ float pos2[256*3];
@@ -86,9 +89,9 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 #define dry (pos.y - pos2[threadIdx.x+256])
                                 #define drz (pos.z - pos2[threadIdx.x+512])
                                 */
-                                #define drx (pos.x - pos2.x)
-                                #define dry (pos.y - pos2.y)
-                                #define drz (pos.z - pos2.z)
+                                #define drx (pos.x - pos2_x)
+                                #define dry (pos.y - pos2_y)
+                                #define drz (pos.z - pos2_z)
                                 #define rr (sqrt(drx*drx + dry*dry + drz*drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
