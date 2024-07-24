@@ -4,7 +4,7 @@ project(sph)
 include_directories("./header/")
 find_package(CUDA REQUIRED)
 file (GLOB_RECURSE files  *.cu */*.cu)
-set(CUDA_NVCC_FLAGS -rdc=true)
+set(CUDA_NVCC_FLAGS -rdc=true;--ptxas-options=-v)
 
 message(STATUS "cuda version: " ${CUDA_VERSION_STRING})
 include_directories(${CUDA_INCLUDE_DIRS})
