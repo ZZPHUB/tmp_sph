@@ -8,7 +8,7 @@ extern __device__ int calcGridPos_y(float y);
 
 extern __device__ int calcGridPos_z(float z);
 
-extern __device__ int calcGridHash(int x,int y,int z);
+extern __device__ int calcGridHash_new(int x,int y,int z);
 
 ///根据位置计算粒子网格坐标
 extern __device__ int3 calcGridPos(float3 p);
