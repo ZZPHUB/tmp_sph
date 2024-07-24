@@ -34,10 +34,10 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
         pos.x = sortedPos[3 * index];
         pos.y = sortedPos[3 * index + 1];
         pos.z = sortedPos[3 * index + 2];
-        int3 gridPos;
-        gridPos.x = calcGridPos_x(pos.x);
-        gridPos.y = calcGridPos_y(pos.y);
-        gridPos.z = calcGridPos_z(pos.z);
+        //int3 gridPos;
+        //gridPos.x = calcGridPos_x(pos.x);
+        //gridPos.y = calcGridPos_y(pos.y);
+        //gridPos.z = calcGridPos_z(pos.z);
         //int3 newgridPos;
         //int grid_count = 0;
         //int par_count = 0;
@@ -52,7 +52,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                     //newgridPos.y = gridPos.y + y;
                     //newgridPos.z = gridPos.z + z;
                     //int newgridHash = calcGridHash(newgridPos);
-                    int newgridHash = calcGridHash_new(gridPos.x + x,gridPos.y + y,gridPos.z + z);
+                    //int newgridHash = calcGridHash_new(gridPos.x + x,gridPos.y + y,gridPos.z + z);
+                    int newgridHash = particleHash[index] + calcGridHash_new(x,y,z);
                     if (newgridHash <= par.hash_max && newgridHash >= 0)
                     {
                         int startIndex = cellStart[newgridHash];
@@ -191,10 +192,10 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
         vel.z = sortedVel[3 * index + 2];
         float pres = sortedpressure[index];	float dens = sorteddensity[index];
         //int3 gridPos = calcGridPos(pos);
-        int3 gridPos;
-        gridPos.x = calcGridPos_x(pos.x);
-        gridPos.y = calcGridPos_y(pos.y);
-        gridPos.z = calcGridPos_z(pos.z);
+        //int3 gridPos;
+        //gridPos.x = calcGridPos_x(pos.x);
+        //gridPos.y = calcGridPos_y(pos.y);
+        //gridPos.z = calcGridPos_z(pos.z);
         //int3 newgridPos;
         float densitydt_temp = 0;
         float3 veldt_temp = make_float3(0, 0, 0);
@@ -212,7 +213,8 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                     //gridPos.x += x;
                     //gridPos.y += y;
                     //gridPos.z += z;
-                    int gridHash = calcGridHash_new(gridPos.x+x,gridPos.y+y,gridPos.z+z);
+                    //int gridHash = calcGridHash_new(gridPos.x+x,gridPos.y+y,gridPos.z+z);
+                    int gridHash = particleHash[index] + calcGridHash_new(x,y,z);
 
                     if (gridHash <= par.hash_max && gridHash >= 0)
                     {
