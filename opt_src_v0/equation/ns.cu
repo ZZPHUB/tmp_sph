@@ -64,6 +64,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
+                            #undef startIndex
+                            #undef endIndex
                             //int cellData = particleHash[i];
                             //if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
