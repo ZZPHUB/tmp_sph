@@ -62,8 +62,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
-                            int cellData = particleHash[i];
-                            if (cellData != newgridHash)  break;
+                            //int cellData = particleHash[i];
+                            //if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
                                 
@@ -224,8 +224,8 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
-                            int cellData = particleHash[i];
-                            if (cellData != gridHash)  break;
+                            //int cellData = particleHash[i];
+                            //if (cellData != gridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
                                 float3 pos2; 
