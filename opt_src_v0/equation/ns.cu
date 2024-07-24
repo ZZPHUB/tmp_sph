@@ -56,16 +56,16 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                     int newgridHash = particleHash[index] + calcGridHash_new(x,y,z);
                     if (newgridHash <= par.hash_max && newgridHash >= 0)
                     {
-                        int startIndex = cellStart[newgridHash];
-                        //#define startIndex (cellStart[newgridHash])
+                        //int startIndex = cellStart[newgridHash];
+                        #define startIndex (cellStart[newgridHash])
                         if (startIndex == 0xffffffff)	continue;
-                        int endIndex = cellEnd[newgridHash];
-                        //#define endIndex (cellEnd[newgridHash])
+                        //int endIndex = cellEnd[newgridHash];
+                        #define endIndex (cellEnd[newgridHash])
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
-                            //#undef startIndex
-                            //#undef endIndex
+                            #undef startIndex
+                            #undef endIndex
                             //int cellData = particleHash[i];
                             //if (cellData != newgridHash)  break;
                             if (i != index)	// check not colliding with self
@@ -225,24 +225,31 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
 
                     if (gridHash <= par.hash_max && gridHash >= 0)
                     {
-                        int startIndex = cellStart[gridHash];
+                        //int startIndex = cellStart[gridHash];
+                        #define startIndex cellStart[gridHash]
                         if (startIndex == 0xffffffff)	continue;
-                        int endIndex = cellEnd[gridHash];
+                        //int endIndex = cellEnd[gridHash];
+                        #define endIndex cellEnd[gridHash]
                         //  iterate over particles in this cell
                         for (int i = startIndex; i < endIndex; i++)
                         {
+                            #undef startIndex
+                            #undef endIndex
                             //int cellData = particleHash[i];
                             //if (cellData != gridHash)  break;
                             if (i != index)	// check not colliding with self
                             {
-                                float3 pos2; 
+                                //float3 pos2; 
                                 //float rr, drx, dry, drz;
-                                pos2.x = sortedPos[3 * i];
-                                pos2.y = sortedPos[3 * i + 1];
-                                pos2.z = sortedPos[3 * i + 2];
-                                #define drx (pos.x - pos2.x)
-                                #define dry (pos.y - pos2.y)
-                                #define drz (pos.z - pos2.z)
+                                //pos2.x = sortedPos[3 * i];
+                                //pos2.y = sortedPos[3 * i + 1];
+                                //pos2.z = sortedPos[3 * i + 2];
+                                #define pos_x sortedPos[3*i]
+                                #define pos_y sortedPos[3*i+1]
+                                #define pos_z sortedPos[3*i+2]
+                                #define drx (pos.x - pos2_x)
+                                #define dry (pos.y - pos2_y)
+                                #define drz (pos.z - pos2_z)
                                 
                                /*
                                __shared__ float pos2[256*3];
