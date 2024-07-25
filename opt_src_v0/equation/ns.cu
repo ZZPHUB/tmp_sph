@@ -27,9 +27,9 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
     if (index < numParticles)
     {
         //dofv[index] = 0.0; rhop_sum[index] = 0.0; w_sum[index] = 0.0;//dofv-acoustic damper
-        float rhop_sum_tmp = 0.0;
-        float w_sum_tmp = 0.0;
-        float dofv_tmp = 0.0;
+        float rhop_sum_tmp = 0.0f;
+        float w_sum_tmp = 0.0f;
+        float dofv_tmp = 0.0f;
         float3 pos;
         pos.x = sortedPos[3 * index];
         pos.y = sortedPos[3 * index + 1];
@@ -92,7 +92,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                 #define drx (pos.x - pos2_x)
                                 #define dry (pos.y - pos2_y)
                                 #define drz (pos.z - pos2_z)
-                                #define rr (sqrt(drx*drx + dry*dry + drz*drz))
+                                #define rr (sqrtf(drx*drx + dry*dry + drz*drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 float w, fr;
@@ -102,15 +102,15 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
 
                                 if (rr < par.kh)
                                 {
-                                    if (q <= 2)
+                                    if (q <= 2.0f)
                                     {
-                                        w = (par.adh * pow(1 - q / 2.0, 4) * (2 * q + 1.0));
-                                        #define factor1 (pow(1 - q / 2.0, 3))
-                                        #define factor2 (2 * q + 1.0)
-                                        #define factor3 (pow(1 - q / 2.0, 4))
+                                        w = (par.adh * powf(1.0f - q / 2.0f, 4) * (2.0f * q + 1.0f));
+                                        #define factor1 (powf(1.0f - q / 2.0f, 3))
+                                        #define factor2 (2.0f * q + 1.0f)
+                                        #define factor3 (powf(1.0f - q / 2.0f, 4))
                                         #define factor4  (par.h * rr)
                                         
-                                        fr =  (par.adh * (-2.0 * factor1 * factor2/ factor4 + 2.0 * factor3 / factor4));
+                                        fr =  (par.adh * (-2.0f * factor1 * factor2/ factor4 + 2.0f * factor3 / factor4));
                                         //#define  frx  (par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4));
                                         //#define  fry  (par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4));
                                         //#define  frz  (par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4));
@@ -118,8 +118,8 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     }
                                     else
                                     {
-                                        w = 0.0;
-                                        fr = 0.0;
+                                        w = 0.0f;
+                                        fr = 0.0f;
                                         //frx = 0.0;
                                         //fry = 0.0;
                                         //frz = 0.0;
@@ -129,7 +129,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     #define  frz  (fr*drz)
                                     if (sorted_particle_type[index] != 1 && sorted_particle_type[i] == 1)//计算边界所需变量
                                     {
-                                        rhop_sum_tmp += (sortedpressure[i] - sorteddensity[i] * (0.0 * drx + 0.0 * dry + (0.0 - par.gravity) * drz)) * w;
+                                        rhop_sum_tmp += (sortedpressure[i] - sorteddensity[i] * (0.0f * drx + 0.0f * dry + (0.0f - par.gravity) * drz)) * w;
                                         w_sum_tmp += w;
                                     }
                                     else if (sorted_particle_type[index] == 1 && sorted_particle_type[i] == 1)
@@ -149,7 +149,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
         if (sorted_particle_type[index] != 1)
         {
             //if (fabs(w_sum[index]) > 1.0E-8)
-            if (fabs(w_sum_tmp) > 1.0E-8)
+            if (fabs(w_sum_tmp) > 1.0E-8f)
             {
                 //sortedpressure[index] = rhop_sum[index] / w_sum[index];
                 rhop_sum_tmp = rhop_sum_tmp / w_sum_tmp;
@@ -157,10 +157,10 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
             else
             {
                 //sortedpressure[index] = 0;
-                rhop_sum_tmp = 0.0;
+                rhop_sum_tmp = 0.0f;
             }
             //if (sortedpressure[index] < 0)  sortedpressure[index] = 0;
-            if(rhop_sum_tmp < 0.0) rhop_sum_tmp = 0.0;
+            if(rhop_sum_tmp < 0.0f) rhop_sum_tmp = 0.0f;
             sortedpressure[index] = rhop_sum_tmp;
             sorteddensity[index] = rhop_sum_tmp / par.cs / par.cs + par.restDensity;
         }
@@ -204,8 +204,8 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
         //gridPos.y = calcGridPos_y(pos.y);
         //gridPos.z = calcGridPos_z(pos.z);
         //int3 newgridPos;
-        float densitydt_temp = 0;
-        float3 veldt_temp = make_float3(0, 0, 0);
+        float densitydt_temp = 0.0f;
+        float3 veldt_temp = make_float3(0.0f, 0.0f, 0.0f);
 
         for (int z = -1; z <= 1; z++)
         {
@@ -260,7 +260,7 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                                 #define dry (pos.y - pos2[threadIdx.x+256])
                                 #define drz (pos.z - pos2[threadIdx.x+512])
                                 */
-                                #define rr (sqrt(drx * drx + dry * dry + drz * drz))
+                                #define rr (sqrtf(drx * drx + dry * dry + drz * drz))
                                 //drx = pos.x - pos2.x; dry = pos.y - pos2.y; drz = pos.z - pos2.z;
                                 //rr = sqrt(drx * drx + dry * dry + drz * drz);
                                 if (rr < par.kh)
@@ -269,20 +269,20 @@ __global__ void computeGovering_equationD(float* sortedPos, float* sortedVel, fl
                                     float fr;
                                     //float factor1, factor2, factor3, factor4;
                                     float q = rr / par.h;
-                                    if (q <= 2)
+                                    if (q <= 2.0f)
                                     {
-                                        #define factor1 (pow(1 - q / 2.0, 3))
-                                        #define factor2 (2 * q + 1.0)
-                                        #define factor3 (pow(1 - q / 2.0, 4))
+                                        #define factor1 (powf(1.0f - q / 2.0f, 3))
+                                        #define factor2 (2.0f * q + 1.0f)
+                                        #define factor3 (powf(1.0f - q / 2.0f, 4))
                                         #define factor4 (par.h * rr)
-                                        fr = par.adh * (-2.0 * factor1 * factor2/factor4 + 2.0 * factor3/factor4);
+                                        fr = par.adh * (-2.0f * factor1 * factor2/factor4 + 2.0f * factor3/factor4);
                                         //frx = par.adh * (-2.0 * factor1 * factor2 * drx / factor4 + 2.0 * factor3 * drx / factor4);
                                         //fry = par.adh * (-2.0 * factor1 * factor2 * dry / factor4 + 2.0 * factor3 * dry / factor4);
                                         //frz = par.adh * (-2.0 * factor1 * factor2 * drz / factor4 + 2.0 * factor3 * drz / factor4);
                                     }
                                     else
                                     {
-                                        fr = 0.0;
+                                        fr = 0.0f;
                                         //frx = 0.0;
                                         //fry = 0.0;
                                         //frz = 0.0;
