@@ -92,7 +92,7 @@ __global__ void computeBoundary_Delta_acoustic_D(float* sortedPos, float* sorted
                                     fr = (1.0f - q/2.0f) * (1.0f - q/2.0f) * (1.0f - q/2.0f);
                                     w = fr*(1.0f - q/2.0f);
                                     w *= (2.0f*q + 1)*par.adh;
-                                    fr *= -5.0f/(par.h*par.h);
+                                    fr *= -5.0f*par.adh/(par.h*par.h);
                                     
                                     if (sorted_particle_type[index] != 1 && sorted_particle_type[i] == 1)//计算边界所需变量
                                     {
